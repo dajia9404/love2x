@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+
+        #group {
+            height: 50px;
+            text-align: center;
+        }
+
+        #desc {
+            text-align: center;
+            line-height: 18px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: 1em;
+        }
+
+        input[type=text] {
+            margin-right: -8px;
+            width: 70%;
+            height: 48px;
+            display: inline-block;
+            padding-left: 20px;
+            padding-right: 10px;
+            border: 1px solid #4CAF50;
+            border-right: 0;
+            border-radius: 4px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: 1.2em !important;
+        }
+        input[type=submit] {
+            width: 15%;
+            height: 50px;
+            background-color: #4CAF50;
+            color: white;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: 1em;
+            padding: 10px 20px;
+            border:none;
+            border-radius: 4px;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            cursor: pointer;
+        }
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+        #support {
+            font-size: 0.5em;
+            color: white;
+            background-color: #155318;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+        a img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        <img src="./result@2.png">
+    </h1>
+    <div id="desc">
+        复制路径到输入框,则可检索<b>非2倍</b>分辨资源<a href=""><img src="./gold.png" ></a> 
+    </div>
+    <div id="group">
+        <input type="text" placeholder="输入要检索的路径">
+        <input type="submit" value="提交" >
+    </div>
+    <script>
+
+        var allFilesFullPath = [];
+        var allImgsFullPath = [];
+        var _path = "C:\\Users\\Administrator\\Documents\\X_qipai_chengxu\\通用\\UI\\B-背包\\1280x720";
+
+        function isPng(path)
+        {
+            return path.indexOf(".png") != -1;
+        }
+
+        window.onload = function()
+        {
+            // console.log(window.getPath()) // 正常执行
+            // console.log(window.getDirName()) // 正常执行
+        }
+
+        function readDir(__path)
+        {
+            var files = readdirSync(__path);
+            files.forEach(( item ,index) => 
+            {
+                var full_path = window.join(__path,item);
+                var stat = statSync(full_path);
+                if(stat.isDirectory())
+                {
+                    readDir(full_path);
+                }
+                else
+                {
+                    allFilesFullPath.push(full_path);
+                }
+            })
+        }
+
+        function testClick()
+        {
+            readDir(_path);
+            allImgsFullPath = allFilesFullPath.filter( p=>
+            {
+                return isPng(p);
+            });
+
+            allImgsFullPath.forEach( p=> 
+            {
+                var buffer = readFileSync(p);
+                var width = 0,height = 0;
+
+                if(isPng(p))
+                {
+                    if (buffer.toString('ascii', 12, 16) === 'CgBI') 
+                    {
+                        width = buffer.readUInt32BE(32);
+                        height = buffer.readUInt32BE(36);
+                    }
+                    else
+                    {
+                        width = buffer.readUInt32BE(16);
+                        height = buffer.readUInt32BE(20);
+                    }
+                }
+                console.log(p,width,height);
+            });
+        }
+
+
+
+    </script>
+</body>
+</html>
