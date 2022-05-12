@@ -50,3 +50,8 @@ window.readFileSync = function(pngPath)
 {
     return fs.readFileSync(pngPath)
 }
+
+window.normalize = function(fpath)
+{   
+    return path.normalize(fpath);
+}
